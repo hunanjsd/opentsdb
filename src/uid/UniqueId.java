@@ -329,6 +329,7 @@ public final class UniqueId implements UniqueIdInterface {
    * <p>
    * <strong>This method is blocking.</strong>  Its use within OpenTSDB itself
    * is discouraged, please use {@link #getNameAsync} instead.
+   * 阻塞获取 uid 对应的 name
    * @param id The ID associated with that name.
    * @see #getId(String)
    * @see #getOrCreateId(String)
@@ -365,6 +366,7 @@ public final class UniqueId implements UniqueIdInterface {
                                          + " which is != " + id_width
                                          + " required for '" + kind() + '\'');
     }
+    /* 首先从缓存中间 get */
     final String name = getNameFromCache(id);
     if (name != null) {
       incrementCacheHits();
@@ -444,6 +446,7 @@ public final class UniqueId implements UniqueIdInterface {
       return Deferred.fromResult(id);
     }
     incrementCacheMiss();
+    /* HBase client 异步回调函数, 将结果写入 cache 中 */
     class GetIdCB implements Callback<byte[], byte[]> {
       public byte[] call(final byte[] id) {
         if (id == null) {
@@ -472,6 +475,7 @@ public final class UniqueId implements UniqueIdInterface {
         return id;
       }
     }
+    /* 缓存穿透,未命中, 从 HBase 中查找  */
     Deferred<byte[]> d = getIdFromHBase(name).addCallback(new GetIdCB());
     return d;
   }
@@ -548,6 +552,7 @@ public final class UniqueId implements UniqueIdInterface {
       return assignment;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object call(final Object arg) {
       if (attempt == 0) {
@@ -617,6 +622,7 @@ public final class UniqueId implements UniqueIdInterface {
       LOG.info("Creating " + (randomize_id ? "a random " : "an ") + 
           "ID for kind='" + kind() + "' name='" + name + '\'');
 
+      /* 需要改了 state 的状态值, 上面的 switch 进入另一个 case */
       state = CREATE_REVERSE_MAPPING;
       if (randomize_id) {
         return Deferred.fromResult(RandomUniqueId.getRandomUID());
@@ -780,8 +786,10 @@ public final class UniqueId implements UniqueIdInterface {
    * @throws IllegalStateException if the ID found in HBase is encoded on the
    * wrong number of bytes.
    */
+  @Override
   public byte[] getOrCreateId(final String name) throws HBaseException {
     try {
+      /* 阻塞调用, 获取 uid  */
       return getIdAsync(name).joinUninterruptibly();
     } catch (NoSuchUniqueName e) {
       if (tsdb != null && tsdb.getUidFilter() != null && 
@@ -832,6 +840,7 @@ public final class UniqueId implements UniqueIdInterface {
       // start the assignment dance after stashing the deferred
       byte[] uid = null;
       try {
+        /* 阻塞调用 Uid */
         uid = new UniqueIdAllocator(name, assignment).tryAllocate().joinUninterruptibly();
       } catch (RuntimeException e1) {
         throw e1;
@@ -870,7 +879,7 @@ public final class UniqueId implements UniqueIdInterface {
    * Finds the ID associated with a given name or creates it.
    * <p>
    * The length of the byte array is fixed in advance by the implementation.
-   *
+   * 异步获取 uid 哦
    * @param name The name to lookup in the table or to assign an ID to.
    * @param metric Name of the metric associated with the UID for filtering.
    * @param tags Tag set associated with the UID for filtering.

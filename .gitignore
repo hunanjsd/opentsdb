@@ -4,16 +4,13 @@ Makefile.in
 aclocal.m4
 autom4te.cache
 build
-target
 config.log
 config.status
 configure
-pom.xml
 *.pyc
 .*.swp
 *.rrd
 *.class
-*/target/*
 *.orig
 *.log
 
@@ -35,8 +32,7 @@ guava-rpm-maker/\.project
 .settings
 
 # maven
-src-main
-src-test
+
 plugin_test.jar
 bin/
 

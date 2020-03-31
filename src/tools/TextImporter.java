@@ -80,7 +80,7 @@ final class TextImporter {
                              + " (%.1f points/s)",
                              points, time_delta, (points / time_delta)));
       // TODO(tsuna): Figure out something better than just writing to stderr.
-      tsdb.collectStats(new StatsCollector("tsd") {
+      tsdb.collectStats(new StatsCollector("tsd_bk") {
         @Override
         public final void emit(final String line) {
           System.err.print(line);

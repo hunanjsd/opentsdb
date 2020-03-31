@@ -10,7 +10,7 @@
 // General Public License for more details.  You should have received a copy
 // of the GNU Lesser General Public License along with this program.  If not,
 // see <http://www.gnu.org/licenses/>.
-package tsd.client;
+package tsd_bk.client;
 
 // I (tsuna) originally wrote this code for Netty.  Surprisingly, GWT has
 // nothing to manually parse query string parameters...

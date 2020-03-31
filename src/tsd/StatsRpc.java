@@ -60,7 +60,7 @@ public final class StatsRpc implements TelnetRpc, HttpRpc {
       final String[] cmd) {
     final boolean canonical = tsdb.getConfig().getBoolean("tsd.stats.canonical");
     final StringBuilder buf = new StringBuilder(1024);
-    final ASCIICollector collector = new ASCIICollector("tsd", buf, null);
+    final ASCIICollector collector = new ASCIICollector("tsd_bk", buf, null);
     doCollectStats(tsdb, collector, canonical);
     chan.write(buf.toString());
     return Deferred.fromResult(null);
@@ -109,7 +109,7 @@ public final class StatsRpc implements TelnetRpc, HttpRpc {
       final boolean json = query.hasQueryStringParam("json");
       final StringBuilder buf = json ? null : new StringBuilder(2048);
       final ArrayList<String> stats = json ? new ArrayList<String>(64) : null;
-      final ASCIICollector collector = new ASCIICollector("tsd", buf, stats);
+      final ASCIICollector collector = new ASCIICollector("tsd_bk", buf, stats);
       doCollectStats(tsdb, collector, canonical);
       if (json) {
         query.sendReply(JSON.serializeToBytes(stats));
@@ -121,7 +121,7 @@ public final class StatsRpc implements TelnetRpc, HttpRpc {
     
     // we have an API version, so go newschool
     final List<IncomingDataPoint> dps = new ArrayList<IncomingDataPoint>(64);
-    final SerializerCollector collector = new SerializerCollector("tsd", dps, 
+    final SerializerCollector collector = new SerializerCollector("tsd_bk", dps,
         canonical);
     ConnectionManager.collectStats(collector);
     RpcHandler.collectStats(collector);

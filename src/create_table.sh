@@ -16,7 +16,8 @@ TREE_TABLE=${TREE_TABLE-'tsdb-tree'}
 META_TABLE=${META_TABLE-'tsdb-meta'}
 BLOOMFILTER=${BLOOMFILTER-'ROW'}
 # LZO requires lzo2 64bit to be installed + the hadoop-gpl-compression jar.
-COMPRESSION=${COMPRESSION-'LZO'}
+#COMPRESSION=${COMPRESSION-'LZO'}
+COMPRESSION=NONE
 # All compression codec names are upper case (NONE, LZO, SNAPPY, etc).
 COMPRESSION=`echo "$COMPRESSION" | tr a-z A-Z`
 # DIFF encoding is very useful for OpenTSDB's case that many small KVs and common prefix.

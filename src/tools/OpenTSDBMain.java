@@ -92,7 +92,7 @@ public class OpenTSDBMain {
     tmp.put("import", TextImporter.class);
     tmp.put("mkmetric", UidManager.class); // -> shift --> set uid assign metrics "$@"
     tmp.put("query", CliQuery.class);
-    tmp.put("tsd", OpenTSDBMain.class);
+    tmp.put("tsd_bk", OpenTSDBMain.class);
     tmp.put("scan", DumpSeries.class);
     tmp.put("uid", UidManager.class);
     tmp.put("exportui", UIContentExporter.class);
@@ -160,7 +160,7 @@ public class OpenTSDBMain {
     if("mkmetric".equals(targetTool)) {
       shift(args);
     } 
-    if(!"tsd".equals(targetTool)) {     
+    if(!"tsd_bk".equals(targetTool)) {
       try {
         COMMANDS.get(targetTool).getDeclaredMethod("main", String[].class).invoke(null, new Object[] {args});
       } catch(Exception x) {
@@ -596,7 +596,7 @@ public class OpenTSDBMain {
             mainUsage(System.err);
           } else {
             try {
-              if(args[0].equals("tsd")) {
+              if(args[0].equals("tsd_bk")) {
                 ConfigArgP cap = new ConfigArgP(); 
                 if(args.length>1 && args[1].trim().equals("extended")) {
                   System.out.println(cap.getExtendedUsage("tsd extended usage:"));
